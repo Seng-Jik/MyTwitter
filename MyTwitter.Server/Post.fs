@@ -39,8 +39,9 @@ type PostManager (userManager: UserManager) =
     let queryBy (dicBag: ConcurrentDictionary<string, ConcurrentBag<Post>>) (key: string) = 
         let mutable dummy = null
         if dicBag.TryGetValue (key, &dummy)
-        then Seq.cast dummy 
+        then Seq.cast dummy
         else Seq.empty
+        : Post seq
 
     let rec dumpContent (c: char) (input: string) = 
         let a = input.IndexOf c
@@ -70,7 +71,7 @@ type PostManager (userManager: UserManager) =
                 maxPostId.Value <- maxPostId.Value + 1UL
                 post)
 
-        let postJson = Post.toJson post
+        let postJson = JsonValue.Array [|Post.toJson post|]
 
         tags
         |> List.iter (fun tag ->

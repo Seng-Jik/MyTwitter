@@ -66,12 +66,16 @@ let twitterService (webSocket: WebSocket) (_: HttpContext) =
                 | "query_posts_by_at" -> postMgr.QueryByAt json.Arg1 |> sendQueryResult
                 | "query_posts_by_user" -> postMgr.QueryByUser json.Arg1 |> sendQueryResult
                 | "query_posts_by_tag" -> postMgr.QueryByTag json.Arg1 |> sendQueryResult
-                | "follow" -> userMgr.Follow username json.Arg1 |> ignore
+                | "follow" -> 
+                    userMgr.Follow username json.Arg1 |> ignore
+                    lock stdout (fun () -> printfn $"{username} start following {json.Arg1}")
+                    
                 | "tweet" -> 
                     postMgr.SendPost myself json.Arg1 <|
                         if json.Arg2 = "" 
                         then None 
                         else Some <| uint64 (json.Arg2.AsInteger64 ())
+                    lock stdout (fun () -> printfn $"{username} tweet a post.")
                     
                 | _ -> ()
             | (Close, _, _) -> 

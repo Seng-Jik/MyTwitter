@@ -50,8 +50,8 @@ type PostManager (userManager: UserManager) =
         else
             let b = input.IndexOf (' ', a)
             if b < 0 
-            then [input.[a..]]
-            else input.[a..b] :: dumpContent c input.[ b + 1 .. ]
+            then [input.[a..].Trim()]
+            else input.[a..b].Trim() :: dumpContent c input.[ b + 1 .. ]
 
     member _.SendPost (author: User) (content: string) (retweet: uint64 option) =
         let ats = dumpContent '@' content
@@ -89,7 +89,7 @@ type PostManager (userManager: UserManager) =
                     (fun _ -> ConcurrentBag<Post>()))
             bag.Add post
             
-            userManager.SendJsonToUser at postJson)
+            userManager.SendJsonToUser (at.[1..].Trim()) postJson)
 
         begin
             let bag =

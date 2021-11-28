@@ -16,7 +16,7 @@ let postMgr = PostManager (userMgr)
 type QueryRequest = JsonProvider<"{ \"op\": \"query_at\", \"arg1\": \"mark\", \"arg2\": \"what\" }">
 
 
-let twitterService (webSocket: WebSocket) (context: HttpContext) =
+let twitterService (webSocket: WebSocket) (_: HttpContext) =
     socket {
         let! _, username, _ = 
             webSocket.read ()
@@ -24,7 +24,7 @@ let twitterService (webSocket: WebSocket) (context: HttpContext) =
         let username =
             username
             |> UTF8.toString
-            |> RegisterMessage.Load
+            |> RegisterMessage.Parse
             |> fun x -> x.Username
 
         let mutable loop = true
@@ -44,10 +44,12 @@ let twitterService (webSocket: WebSocket) (context: HttpContext) =
                 | Ok u -> u
                 | Error _ -> failwith "Can not get myself."
 
+        lock stdout (fun () -> printfn $"{username} is login.")
+
         while loop do
             match! webSocket.read () with
             | (Opcode.Text, data, true) ->
-                let json = UTF8.toString data |> QueryRequest.Load
+                let json = UTF8.toString data |> QueryRequest.Parse
 
                 let sendQueryResult =
                     Seq.map Post.toJson
@@ -75,12 +77,18 @@ let twitterService (webSocket: WebSocket) (context: HttpContext) =
             | (Close, _, _) -> 
                 loop <- false
                 userMgr.Logout username
-                do! webSocket.send Close (ByteSegment [||]) true
             | _ -> ()
+
+        lock stdout (fun () -> printfn $"{username} is logout.")
     }
 
 
-let _, server = startWebServerAsync defaultConfig  <| handShake twitterService
+let config =
+    { defaultConfig with 
+        bindings = [ HttpBinding.createSimple HTTP "127.0.0.1" 31755 ] }
+
+
+let _, server = startWebServerAsync config <| handShake twitterService
     
 
 Async.RunSynchronously server

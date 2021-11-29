@@ -49,5 +49,6 @@ type UserManager () =
         if users.TryGetValue (username, &dummy) then
             if dummy.Connect.IsSome then
                 dummy.Connect.Value.send Text (json.ToString () |> UTF8.bytes |> ByteSegment) true
+                |> Async.Catch
                 |> Async.Ignore
                 |> Async.Start

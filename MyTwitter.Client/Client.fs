@@ -88,6 +88,8 @@ type Client (username: string) =
             "arg2", JsonValue.String arg2|]
 
     let sendMsg opCode arg1 arg2 = makeMsg opCode arg1 arg2 |> sendJson
+
+    member _.Username = username
     
     member _.Follow username =
         sendMsg "follow" username ""

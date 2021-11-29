@@ -9,6 +9,8 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "MyTwitter.Client", "MyTwitt
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "MyTwitter.ClientCUI", "MyTwitter.ClientCUI\MyTwitter.ClientCUI.fsproj", "{D4F08954-9BE0-4296-B2E0-889E48A49234}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "MyTwitter.Simulator", "MyTwitter.Simulator\MyTwitter.Simulator.fsproj", "{D5C470F5-EE42-40F3-B85B-6C289CC4E679}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +32,9 @@ Global
 		{D4F08954-9BE0-4296-B2E0-889E48A49234}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D4F08954-9BE0-4296-B2E0-889E48A49234}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D4F08954-9BE0-4296-B2E0-889E48A49234}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D5C470F5-EE42-40F3-B85B-6C289CC4E679}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D5C470F5-EE42-40F3-B85B-6C289CC4E679}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D5C470F5-EE42-40F3-B85B-6C289CC4E679}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D5C470F5-EE42-40F3-B85B-6C289CC4E679}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

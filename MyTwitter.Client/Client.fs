@@ -72,15 +72,6 @@ type Client (username: string) =
 
     let mutable isOk = false
 
-    do 
-        let cancellationToken = Threading.CancellationToken ()
-        wsClient.ConnectAsync(Uri "ws://localhost:31755/", cancellationToken).Wait()
-        let registerMsg = JsonValue.Record [|("username", JsonValue.String username)|]
-        sendJson registerMsg
-        match recvText () with
-        | "OK" -> isOk <- true
-        | _ -> isOk <- false
-
     let makeMsg opCode arg1 arg2 =
         JsonValue.Record
           [|"op", JsonValue.String opCode
@@ -88,6 +79,14 @@ type Client (username: string) =
             "arg2", JsonValue.String arg2|]
 
     let sendMsg opCode arg1 arg2 = makeMsg opCode arg1 arg2 |> sendJson
+
+    do 
+        let cancellationToken = Threading.CancellationToken ()
+        wsClient.ConnectAsync(Uri "ws://localhost:5000/my_twitter", cancellationToken).Wait()
+        sendMsg "register" username ""
+        match recvText () with
+        | "OK" -> isOk <- true
+        | _ -> isOk <- false
 
     member _.Username = username
     
@@ -106,7 +105,11 @@ type Client (username: string) =
     member _.QueryPostsByUser user =
         sendMsg "query_posts_by_user" user ""
 
-    member _.Recv () = recvText () |> SrvMsgHelper.toPost
+    member _.Recv () = 
+        recvText () 
+        |> JsonValue.Parse 
+        |> function | JsonValue.String x -> x | _ -> "" 
+        |> SrvMsgHelper.toPost
 
     interface IDisposable with
         member _.Dispose () = 

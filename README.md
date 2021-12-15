@@ -31,3 +31,32 @@ Intel Core i5-6300HQ CPU
 100  | 50  | 10000 | 00:01:00.8630031
 500  | 50  | 10000 | 00:00:04.0518222
 
+
+# JSON协议
+
+## 客户端到服务器
+
+客户端到服务器的消息为一个Object，其中含有`op`、`arg1`、`arg2`三个字段。
+`op`字段与操作具有以下联系：
+
+op字段 | 描述 | arg1含义 | arg2含义
+----- | --- | -------- | --------
+register | 注册并登录 | 用户名 |
+follow   | 开始follow另一个用户 | 用户名 |
+tweet    | 发推 | 内容 | 要转推的ID（可选）
+query_posts_by_at | 根据@查找推文 | @的用户名 |
+query_posts_by_tag | 根据标签查找推文 | 标签名 |
+query_posts_by_user | 根据用户名查找推文 | 用户名 |
+
+## 服务端到客户端
+
+服务端对客户端发送以下对象的数组，其中每个对象代表一个推文：
+
+字段 | 类型 | 含义
+--- | ---- | ----
+post_id | number | Post ID
+author  | string | 作者的用户名
+at      | string array | @的用户列表
+tags    | string array | 标签列表
+retweet | number (nullable) | 转推的原文ID
+content | string | 内容

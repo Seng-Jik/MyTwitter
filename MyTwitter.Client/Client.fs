@@ -80,6 +80,8 @@ type Client (username: string) =
 
     let sendMsg opCode arg1 arg2 = makeMsg opCode arg1 arg2 |> sendJson
 
+    let mutable following = []
+
     do 
         let cancellationToken = Threading.CancellationToken ()
         wsClient.ConnectAsync(Uri "ws://localhost:5000/my_twitter", cancellationToken).Wait()
@@ -92,18 +94,22 @@ type Client (username: string) =
     
     member _.Follow username =
         sendMsg "follow" username ""
+        following <- username :: following
 
     member _.Tweet (retweet: uint64 option) (content: string) =
         sendMsg "tweet" content (retweet |> Option.map string |> Option.defaultValue "")
 
     member _.QueryPostsAtMe () =
-        sendMsg "query_posts_by_at" "@{username}" ""
+        sendMsg "query_posts_by_at" username ""
 
     member _.QueryPostsByTag tag =
         sendMsg "query_posts_by_tag" tag ""
 
     member _.QueryPostsByUser user =
         sendMsg "query_posts_by_user" user ""
+
+    member x.QueryPostsFollowing () = 
+        following |> List.iter x.QueryPostsByUser
 
     member _.Recv () = 
         recvText () 

@@ -17,6 +17,7 @@ let main _ =
     printfn "Query:"
     printfn "    query #tag"
     printfn "    query @user"
+    printfn "    query following"
     printfn "Quit: "
     printfn "    quit"
     printfn ""
@@ -41,10 +42,19 @@ let main _ =
 
         match command with
         | "tweet" -> client.Tweet None content
+        | "retweet" -> 
+            let s = content.IndexOf ' '
+            if s = -1 
+            then printf "You need to input post id to retweet!"
+            else
+                let retweetPostId = uint64 <| content.[..s].Trim()
+                let content = content.[s..].Trim()
+                client.Tweet (Some retweetPostId) content
         | "follow" -> client.Follow content
         | "atme" -> client.QueryPostsAtMe (); recv ()
         | "query" ->
             match content with
+            | "following" -> client.QueryPostsFollowing (); recv ()
             | x when x.StartsWith '#' -> client.QueryPostsByTag x; recv ()
             | x when x.StartsWith '@' -> client.QueryPostsByUser x.[1..]; recv ()
             | _ -> printfn "Invalid query!"
